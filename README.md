@@ -1,11 +1,16 @@
 # ASL-recognition
+
 ###About project
 This project aims to achieve American Sign Language recognition. The main goal is also to achieve real-time webcam recognition.
+
 ###Dataset used
 The dataset used can be found on Kaggle https://www.kaggle.com/datasets/vignonantoine/mediapipe-processed-asl-dataset/data.
+
 ###Specific Packages
 In requirements.txt.
+
 ###Directory Structure
+'''
 ASL-recognition/
 │
 ├── data/ 
@@ -31,3 +36,4 @@ ASL-recognition/
 ├── train_model_2.ipynb
 ├── real_time.py
 └── requirements.txt
+'''
