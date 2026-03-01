@@ -35,4 +35,4 @@ ASL-recognition/
 ├── train_model.ipynb
 ├── train_model_2.ipynb
 ├── real_time.py
-└── requirements.txt````
+└── requirements.txt
