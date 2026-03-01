@@ -1,15 +1,15 @@
 # ASL-recognition
 
-###About project
+##About project
 This project aims to achieve American Sign Language recognition. The main goal is also to achieve real-time webcam recognition.
 
-###Dataset used
+##Dataset used
 The dataset used can be found on Kaggle https://www.kaggle.com/datasets/vignonantoine/mediapipe-processed-asl-dataset/data.
 
-###Specific Packages
+##Specific Packages
 In requirements.txt.
 
-###Directory Structure
+##Directory Structure
 '''
 ASL-recognition/
 │
