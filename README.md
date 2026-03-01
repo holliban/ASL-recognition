@@ -10,7 +10,8 @@ The dataset used can be found on Kaggle https://www.kaggle.com/datasets/vignonan
 In requirements.txt.
 
 ### Directory Structure
-````ASL-recognition/
+````
+ASL-recognition/
 │
 ├── data/ 
 │   └── processed_combine_asl_dataset/
