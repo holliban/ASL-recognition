@@ -6,6 +6,9 @@ This project aims to achieve American Sign Language recognition. The main goal i
 ### Dataset used
 The dataset used can be found on Kaggle https://www.kaggle.com/datasets/vignonantoine/mediapipe-processed-asl-dataset/data.
 
+### Example of data
+<img width="2000" height="800" alt="dataset_preview" src="https://github.com/user-attachments/assets/3b4a723d-c395-4846-ac8e-66e28d35d165" />
+
 ### Specific Packages
 In requirements.txt.
 
