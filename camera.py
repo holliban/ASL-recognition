@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import tensorflow as tf
 import time
-import mediapipe as mp
 
 from mediapipe.tasks.python import BaseOptions
 from mediapipe.tasks.python.vision import HandLandmarker, HandLandmarkerOptions, RunningMode
@@ -20,14 +19,16 @@ options = HandLandmarkerOptions(
     base_options=BaseOptions(model_asset_path="model/hand_landmarker.task"),
     running_mode=RunningMode.IMAGE,  # synchronous
     num_hands=1,
-    min_hand_detection_confidence=0.7
+    min_hand_detection_confidence=0.8
 )
 landmarker = HandLandmarker.create_from_options(options)
-
 
 cap = cv2.VideoCapture(0)
 last_prediction_time = 0
 prediction = ""
+subtitle_text = ""
+MAX_SUBTITLE_LENGTH = 30  # characters before clear
+new_prediction_ready = False
 
 while cap.isOpened():
     ret, frame = cap.read()
@@ -44,7 +45,6 @@ while cap.isOpened():
 
     results = landmarker.detect(mp_image)
 
-
     if results.hand_landmarks:
         h, w, _ = frame.shape
         for hand_landmarks in results.hand_landmarks:
@@ -55,7 +55,7 @@ while cap.isOpened():
             black_canvas = np.zeros_like(frame)
             points = [(x, y) for x, y in zip(x_list, y_list)]
 
-            # Exact colors from your dataset (in BGR format for OpenCV)
+            # Exact colors from the dataset (in BGR format for OpenCV)
             C_GREY = (100, 100, 100)
             C_RED = (60, 60, 215)
             C_BEIGE = (175, 215, 240)  # Thumb
@@ -91,7 +91,7 @@ while cap.isOpened():
                     cv2.circle(black_canvas, points[i], 3, color, -1)
 
             # 4. Crop the black canvas around the hand
-            # Crop a perfect square to prevent distortion
+            # (a perfect square to prevent distortion)
 
             xmin, xmax = min(x_list), max(x_list)
             ymin, ymax = min(y_list), max(y_list)
@@ -106,7 +106,7 @@ while cap.isOpened():
             if model_input_img.size != 0 and (time.time() - last_prediction_time > 1):
                 cv2.imshow("Model Input", model_input_img)
 
-                # FIX: Convert BGR to RGB
+                # Convert BGR to RGB
                 rgb_crop = cv2.cvtColor(model_input_img, cv2.COLOR_BGR2RGB)
 
                 img_resized = cv2.resize(rgb_crop, (160, 160))
@@ -116,18 +116,36 @@ while cap.isOpened():
                 pred = model.predict(img_expanded, verbose=0)
                 class_id = np.argmax(pred)
                 prediction = CLASS_NAMES[class_id]
+                new_prediction_ready = True
                 last_prediction_time = time.time()
 
             # Draw the square box on your main video feed
-
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
     cv2.putText(frame, f"Prediction: {prediction}",
                 (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    if new_prediction_ready:
+        subtitle_text += prediction
+        if len(subtitle_text) >= MAX_SUBTITLE_LENGTH:
+            subtitle_text = ""
+        new_prediction_ready = False
+
+    # Subtitle bar at the bottom
+    h_frame, w_frame = frame.shape[:2]
+    cv2.rectangle(frame, (0, h_frame - 50), (w_frame, h_frame), (0, 0, 0), -1)
+    cv2.putText(frame, subtitle_text,
+                (10, h_frame - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
     cv2.imshow("ASL Recognition", frame)
 
-    if cv2.waitKey(1) & 0xFF == 27:
+    key = cv2.waitKey(1) & 0xFF
+    if key == 27:  # ESC to quit
         break
+    elif key == 32:  # Spacebar
+        subtitle_text += " "
+    elif key == 8:  # Backspace
+        subtitle_text = subtitle_text[:-1]
+    elif key == ord('c'):  # C to clear
+        subtitle_text = ""
 
 cap.release()
 cv2.destroyAllWindows()
